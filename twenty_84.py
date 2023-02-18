@@ -61,13 +61,13 @@ while True:
     both_pressed = left_pressed and right_pressed
 
     if left_pressed and not both_pressed:
-        player.move(LEFT)
+        player.move(LEFT, SCREEN_WIDTH)
 
     if right_pressed and not both_pressed:
-        player.move(RIGHT)
+        player.move(RIGHT, SCREEN_WIDTH)
 
     if both_pressed:
-        player.move(curr_dir)
+        player.move(curr_dir, SCREEN_WIDTH)
 
     if keys_pressed[pygame.K_SPACE] or keys_pressed[pygame.K_UP]:
         player.shoot_laser()

@@ -25,4 +25,4 @@ TODO
 ## Artists
 
 - Spaceship sprites: [Dylestorm](https://livingtheindie.itch.io/)
-- Space pixel background: [PixelSpace](https://github.com/Deep-Fold/PixelSpace)
+- Space pixel background: [PixelSpace](https://deep-fold.itch.io/)
