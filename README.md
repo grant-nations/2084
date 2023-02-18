@@ -20,7 +20,6 @@ TODO
 ## How to play
 TODO
 
-
 ---
 
 ## Artists

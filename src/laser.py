@@ -1,5 +1,5 @@
 from tesla import Tesla
-from utils import UP, DOWN, LEFT, RIGHT
+from utils.utils import UP, DOWN, LEFT, RIGHT
 from player import Player
 
 
