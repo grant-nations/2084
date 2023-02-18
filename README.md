@@ -1,4 +1,4 @@
-<h1 align=center><b>Attack on Tesla</b></h1>
+<h1 align=center><b>2084</b></h1>
 
 ### *The year is 2084...*
 
@@ -11,7 +11,7 @@ Immortality is available to a select few, one of which is Elon Musk (of course).
 1. Set up virtual environment
 2. Activate virtual environment
 3. pip install -r requirements.txt
-4. python attack_on_tesla.py
+4. python twenty_84.py
 
 TODO
 
