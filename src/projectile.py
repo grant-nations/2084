@@ -9,7 +9,7 @@ PROJECTILE_DOWN = 1
 class Projectile(Sprite):
 
     def __init__(self,
-                 x: int,
+                 centerx: int,
                  y: int,
                  direction: str,
                  data_dir: str,
@@ -19,7 +19,7 @@ class Projectile(Sprite):
                                   image_dir=data_dir)
         self.image = self.images[0]
         self.rect = self.image.get_rect()
-        self.rect.x = x
+        self.rect.centerx = centerx
         self.rect.y = y
         self.direction = direction
         self.is_alive = True

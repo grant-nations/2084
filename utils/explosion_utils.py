@@ -1,4 +1,4 @@
-from utils.main_utils import load_image
+from utils.utils import load_image
 from typing import List
 from pygame import Surface
 

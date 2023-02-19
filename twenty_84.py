@@ -1,5 +1,5 @@
 import os
-from src.model import Twenty84Game
+from src.twenty_84_game import Twenty84Game
 
 FPS = 60
 SCREEN_WIDTH = 590
@@ -7,7 +7,7 @@ SCREEN_HEIGHT = 700
 
 if __name__ == '__main__':
     main_dir = os.path.split(os.path.abspath(__file__))[0]
-    data_dir = os.path.join(main_dir, 'img')
+    data_dir = os.path.join(main_dir, 'data')
 
     game = Twenty84Game(data_dir=data_dir,
                         screen_height=SCREEN_HEIGHT,

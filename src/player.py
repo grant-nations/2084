@@ -1,4 +1,4 @@
-from utils.main_utils import load_image
+from utils.utils import load_image
 from pygame.sprite import Sprite
 
 PLAYER_IMG_FILE = "player.png"

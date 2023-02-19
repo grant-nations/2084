@@ -2,10 +2,20 @@ import os
 import pygame
 from typing import Tuple
 
-UP = "up"
-DOWN = "down"
-LEFT = "left"
-RIGHT = "right"
+
+def load_font(font_dir: str, font_name: str, size: int) -> pygame.font.Font:
+    """
+    Load a font from the given file name and return it
+
+    :param font_dir: The directory where the font is located
+    :param font_name: The name of the font file
+    :param size: The size of the font
+
+    :return: The font
+    """
+    pygame.font.init()
+    font_path = os.path.join(font_dir, font_name)
+    return pygame.font.Font(font_path, size)
 
 
 def load_image(image_dir: str,
