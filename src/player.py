@@ -1,4 +1,4 @@
-from utils.utils import LEFT, RIGHT, load_image
+from utils.main_utils import LEFT, RIGHT, load_image
 from pygame.sprite import Sprite
 
 PLAYER_IMG_FILE = "player.png"
@@ -12,9 +12,10 @@ class Player(Sprite):
                  y: int,
                  data_dir: str):
         Sprite.__init__(self)
-        self.image, self.rect = load_image(image_dir=data_dir,
-                                           img_name=PLAYER_IMG_FILE,
-                                           colorkey=-1)
+        self.image = load_image(image_dir=data_dir,
+                                img_name=PLAYER_IMG_FILE,
+                                colorkey=-1)
+        self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.sound = None  # TODO: Load the sound

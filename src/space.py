@@ -1,6 +1,6 @@
 from tesla import Tesla
 from player import Player
-from laser import Laser
+from projectile import Projectile
 
 
 class Space(object):
@@ -27,6 +27,6 @@ class Space(object):
         """Add the given player to the space"""
         pass
 
-    def add_laser(self, laser: Laser):
+    def add_laser(self, laser: Projectile):
         """Add the given laser to the space"""
         pass
