@@ -1,7 +1,7 @@
 import pygame
 import os
 
-from pygame.sprite import Group, spritecollide
+from pygame.sprite import Group, GroupSingle, spritecollide
 from src.player import Player, PLAYER_WIDTH, PLAYER_HEIGHT
 from src.projectile import Projectile
 from utils.main_utils import LEFT, RIGHT, UP, DOWN
@@ -68,6 +68,7 @@ if __name__ == '__main__':
     background = pygame.image.load('img/background.png').convert()
     pygame.display.set_caption('2084')
 
+    player_group = GroupSingle()
     player_lasers = Group()
     tesla_lasers = Group()
     model_3_teslas = Group()
@@ -76,6 +77,7 @@ if __name__ == '__main__':
     player = Player(x=(SCREEN_WIDTH - PLAYER_WIDTH)/2,
                     y=PLAYER_INIT_Y,
                     data_dir=data_dir)
+    player_group.add(player)
 
     # generate the first wave
 
@@ -93,10 +95,34 @@ if __name__ == '__main__':
     last_dir = None
     curr_dir = None
 
-    player_alive = True
+    player_lives = 3
+    player_dead = False
+    delay_frames = FPS  # 1 second
+    respawn_frames = FPS * 2  # 2 seconds
+    invincible = False
 
     # main loop
-    while player_alive:
+    while player_lives > 0:
+
+        if invincible:
+            if respawn_frames > 0:
+                respawn_frames -= 1
+            else:
+                invincible = False
+
+        if player_dead:
+            if delay_frames == 0:
+                player_dead = False
+                invincible = True
+                player = Player(x=(SCREEN_WIDTH - PLAYER_WIDTH)/2,
+                                y=PLAYER_INIT_Y,
+                                data_dir=data_dir)
+                player_group.add(player)
+                delay_frames = FPS
+                respawn_frames = FPS * 2  # 2 seconds
+            else:
+                delay_frames -= 1
+
         # Get player input
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -175,19 +201,26 @@ if __name__ == '__main__':
 
         # Check for collisions
 
-        hit_list = spritecollide(player, tesla_lasers, False)
-        if len(hit_list) > 0:
-            player_alive = False
+        if not invincible:
+            hit_list = spritecollide(player, tesla_lasers, False)
+            if len(hit_list) > 0:
+                explosions.add(Explosion(center=player.rect.center,
+                                         data_dir=data_dir))
+                player_dead = True
+                player_lives -= 1
+                player.die()
+                invincible = True
+                respawn_frames = FPS * 2  # 2 seconds
+                for laser in hit_list:
+                    laser.mark_for_deletion()
 
         for tesla in model_3_teslas:
             for laser in player_lasers:
                 if tesla.rect.colliderect(laser.rect):
-                    tesla.health -= 5
                     laser.mark_for_deletion()
-                    if tesla.health <= 0:
-                        tesla.mark_for_deletion()
-                        explosions.add(Explosion(center=tesla.rect.center,
-                                                 data_dir=data_dir))
+                    tesla.mark_for_deletion()
+                    explosions.add(Explosion(center=tesla.rect.center,
+                                             data_dir=data_dir))
 
         # Update all sprites
         model_3_teslas.update()
@@ -195,11 +228,12 @@ if __name__ == '__main__':
         player_lasers.update()
         tesla_lasers.update()
         explosions.update()
+        player_group.update()
 
         # Draw Everything
         screen.blit(background, (0, 0))
-        screen.blit(player.image, (player.rect.x, player.rect.y))
 
+        player_group.draw(screen)
         tesla_lasers.draw(screen)
         player_lasers.draw(screen)
         model_3_teslas.draw(screen)
@@ -208,19 +242,22 @@ if __name__ == '__main__':
 
         clock.tick(FPS)
 
-    # Player died
-
+    # Game over
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
 
-        screen.blit(background, (0, 0))
-        screen.blit(player.image, (player.rect.x, player.rect.y))
+        explosions.update()
+        player_group.update()
 
+        screen.blit(background, (0, 0))
+
+        player_group.draw(screen)
         tesla_lasers.draw(screen)
         player_lasers.draw(screen)
         model_3_teslas.draw(screen)
+        explosions.draw(screen)
         pygame.display.flip()
 
         clock.tick(FPS)

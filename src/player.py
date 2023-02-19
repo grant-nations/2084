@@ -20,6 +20,12 @@ class Player(Sprite):
         self.rect.y = y
         self.sound = None  # TODO: Load the sound
         self.firing = False
+        self.is_alive = True
+
+    def update(self):
+
+        if not self.is_alive:
+            self.kill()
 
     def move(self,
              direction: str,
@@ -44,3 +50,8 @@ class Player(Sprite):
         """Shoot a laser in the UP direction"""
 
         self.firing = True
+
+    def die(self):
+        """Kill the player"""
+
+        self.is_alive = False

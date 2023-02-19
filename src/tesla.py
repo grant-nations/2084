@@ -11,53 +11,24 @@ class Tesla(Sprite):
     def __init__(self):
         Sprite.__init__(self)
         self.firing = False
-        self.speed = None  # this will be set in the subclasses
         self.is_alive = True
         self.reverse = False
 
+        # The below attributes are set in subclasses
+        self.image = None
+        self.rect = None
+        self.speed = None
+        self.laser_cool_down = None
+        self.laser_counter = None
+        self.laser_timer = None
+
     def mark_for_deletion(self):
         """Mark the Tesla for deletion"""
-
-        self.death_animation()
+        self.is_alive = False
 
     def shoot_laser(self):
         """Shoot a laser"""
         self.firing = True
-
-    def death_animation(self):
-        """Play the death animation"""
-
-        # TODO: Play the death animation
-        self.is_alive = False
-
-
-class ModelS(Tesla):
-    """Model S is the fastest Tesla, but has the lowest health"""
-
-    def __init__(self):
-        Tesla.__init__(self)
-        self.speed = 4
-        self.health = 1
-
-
-class Model3(Tesla):
-    """Model 3 is the second slowest Tesla, but has the second highest health"""
-
-    def __init__(self,
-                 x: int,
-                 y: int,
-                 data_dir: str,):
-        Tesla.__init__(self)
-        self.image = load_image(image_dir=data_dir,
-                                img_name=MODEL_3_IMAGE,
-                                colorkey=-1)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = 2
-        self.health = 3
-        self.laser_counter = 0
-        self.laser_timer = random.randint(1, 600)
 
     def update(self):
         """Update the Tesla"""
@@ -70,7 +41,7 @@ class Model3(Tesla):
         if self.laser_counter == self.laser_timer:
             self.shoot_laser()
             self.laser_counter = 0
-            self.laser_timer = random.randint(1, 700)
+            self.laser_timer = random.randint(1, self.laser_cool_down)
         else:
             self.laser_counter += 1
 
@@ -89,19 +60,45 @@ class Model3(Tesla):
         self.rect.y += self.speed
 
 
+class ModelS(Tesla):
+    """Model S is the fastest Tesla"""
+
+    def __init__(self):
+        Tesla.__init__(self)
+        self.speed = 4
+
+
+class Model3(Tesla):
+    """Model 3 is the second slowest Tesla"""
+
+    def __init__(self,
+                 x: int,
+                 y: int,
+                 data_dir: str,):
+        Tesla.__init__(self)
+        self.image = load_image(image_dir=data_dir,
+                                img_name=MODEL_3_IMAGE,
+                                colorkey=-1)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.speed = 2
+        self.laser_cool_down = 700  # frames
+        self.laser_counter = 0
+        self.laser_timer = random.randint(1, self.laser_cool_down)
+
+
 class ModelX(Tesla):
-    """Model X is the slowest Tesla, but has the highest health"""
+    """Model X is the slowest Tesla"""
 
     def __init__(self):
         Tesla.__init__(self)
         self.speed = 1
-        self.health = 4
 
 
 class ModelY(Tesla):
-    """Model Y is the second fastest Tesla, but has the second lowest health"""
+    """Model Y is the second fastest Tesla"""
 
     def __init__(self):
         Tesla.__init__(self)
         self.speed = 3
-        self.health = 2
