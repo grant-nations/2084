@@ -1,8 +1,11 @@
-from utils.main_utils import LEFT, RIGHT, load_image
+from utils.main_utils import load_image
 from pygame.sprite import Sprite
 
 PLAYER_IMG_FILE = "player.png"
 PLAYER_WIDTH = PLAYER_HEIGHT = 48
+
+PLAYER_LEFT = 0
+PLAYER_RIGHT = 1
 
 
 class Player(Sprite):
@@ -36,9 +39,9 @@ class Player(Sprite):
         :param direction: The direction to move the player in
         :param screen_width: The width of the screen
         """
-        if direction == LEFT:
+        if direction == PLAYER_LEFT:
             self.rect.x -= 5
-        elif direction == RIGHT:
+        elif direction == PLAYER_RIGHT:
             self.rect.x += 5
 
         if self.rect.x < 0:

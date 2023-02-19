@@ -4,7 +4,7 @@ from pygame import Surface
 
 
 def get_images(data_dir: str) -> List[Surface]:
-    """Get the frames for the explosion"""
+    """Get the image frames for explosion animation"""
 
     images = []
     for i in range(1, 12):

@@ -1,8 +1,9 @@
-from utils.main_utils import UP, DOWN, LEFT, RIGHT
 from pygame.sprite import Sprite
 from utils.main_utils import load_image
-from utils.tesla_utils import MODEL_3, MODEL_3_IMAGE
+from utils.tesla_utils import MODEL_3_IMAGE
 import random
+
+TESLA_WIDTH = TESLA_HEIGHT = 48
 
 
 class Tesla(Sprite):
@@ -74,7 +75,7 @@ class Model3(Tesla):
     def __init__(self,
                  x: int,
                  y: int,
-                 data_dir: str,):
+                 data_dir: str):
         Tesla.__init__(self)
         self.image = load_image(image_dir=data_dir,
                                 img_name=MODEL_3_IMAGE,

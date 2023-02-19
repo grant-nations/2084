@@ -4,7 +4,6 @@ from typing import Tuple
 
 
 class Explosion(Sprite):
-    """Explosion is the base class for all explosions"""
 
     def __init__(self,
                  center: Tuple[int, int],
@@ -18,7 +17,6 @@ class Explosion(Sprite):
         self.image_index = 0
 
     def update(self):
-        """Update the explosion"""
         self.image_index += 1
 
         if self.image_index >= len(self.images):

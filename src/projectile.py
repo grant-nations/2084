@@ -1,6 +1,9 @@
-from utils.main_utils import UP, DOWN
 from pygame.sprite import Sprite
 from utils.projectile_utils import get_speed, load_images
+
+
+PROJECTILE_UP = 0
+PROJECTILE_DOWN = 1
 
 
 class Projectile(Sprite):
@@ -49,8 +52,8 @@ class Projectile(Sprite):
     def move(self):
         """Move the laser in the given direction"""
 
-        if self.direction == UP:
+        if self.direction == PROJECTILE_UP:
             self.rect.y -= self.speed
 
-        elif self.direction == DOWN:
+        elif self.direction == PROJECTILE_DOWN:
             self.rect.y += self.speed
