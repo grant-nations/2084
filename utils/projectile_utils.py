@@ -29,45 +29,58 @@ ORANGE_LASER_IMAGES = ['orange_laser_1.png',
                        'orange_laser_2.png',
                        'orange_laser_3.png']
 
+MISSILE = 'missile'
+MISSILE_SPEED = 5
+MISSILE_IMAGES = ['missile-1.png',
+                  'missile-2.png']
 
-def load_images(laser_type: str,
+
+def load_images(projectile_type: str,
                 image_dir: str) -> List[Surface]:
     """Load the images for the laser"""
     images = []
 
-    if laser_type == RED_LASER:
+    if projectile_type == RED_LASER:
         for img_name in RED_LASER_IMAGES:
             images.append(load_image(image_dir=image_dir,
                                      img_name=img_name,
                                      colorkey=-1))
-    elif laser_type == BLUE_LASER:
+    elif projectile_type == BLUE_LASER:
         for img_name in BLUE_LASER_IMAGES:
             images.append(load_image(image_dir=image_dir,
                                      img_name=img_name,
                                      colorkey=-1))
 
-    elif laser_type == GREEN_LASER:
+    elif projectile_type == GREEN_LASER:
         for img_name in GREEN_LASER_IMAGES:
             images.append(load_image(image_dir=image_dir,
                                      img_name=img_name,
                                      colorkey=-1))
 
-    elif laser_type == ORANGE_LASER:
+    elif projectile_type == ORANGE_LASER:
         for img_name in ORANGE_LASER_IMAGES:
+            images.append(load_image(image_dir=image_dir,
+                                     img_name=img_name,
+                                     colorkey=-1))
+
+    elif projectile_type == MISSILE:
+        for img_name in MISSILE_IMAGES:
             images.append(load_image(image_dir=image_dir,
                                      img_name=img_name,
                                      colorkey=-1))
     return images
 
 
-def get_speed(laser_type: str):
+def get_speed(projectile_type: str):
     """Get the speed of the laser from the laser type"""
 
-    if laser_type == RED_LASER:
+    if projectile_type == RED_LASER:
         return RED_LASER_SPEED
-    elif laser_type == BLUE_LASER:
+    elif projectile_type == BLUE_LASER:
         return BLUE_LASER_SPEED
-    elif laser_type == GREEN_LASER:
+    elif projectile_type == GREEN_LASER:
         return GREEN_LASER_SPEED
-    elif laser_type == ORANGE_LASER:
+    elif projectile_type == ORANGE_LASER:
         return ORANGE_LASER_SPEED
+    elif projectile_type == MISSILE:
+        return MISSILE_SPEED

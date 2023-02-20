@@ -1,11 +1,13 @@
 from utils.utils import load_image
 from pygame.sprite import Sprite
+from src.thruster import Thruster
 
 PLAYER_IMG_FILE = "player.png"
 PLAYER_WIDTH = PLAYER_HEIGHT = 48
 
 PLAYER_LEFT = 0
 PLAYER_RIGHT = 1
+PLAYER_VERTICAL = 2
 
 
 class Player(Sprite):
@@ -24,11 +26,29 @@ class Player(Sprite):
         self.sound = None  # TODO: Load the sound
         self.firing = False
         self.is_alive = True
+        self.thruster = Thruster(centerx=self.rect.centerx,
+                                 y=self.rect.bottom,
+                                 data_dir=data_dir)
+        self.direction = PLAYER_VERTICAL
 
     def update(self):
 
         if not self.is_alive:
+            self.thruster.kill()
             self.kill()
+
+        self.thruster.rect.centerx = self.rect.centerx
+        self.thruster.rect.y = self.rect.bottom
+        self.thruster.animate(direction=self.direction, offset_x=3)
+
+    def set_direction(self,
+                      direction: int):
+        """
+        Set the direction of the player
+
+        :param direction: The direction to set the player to
+        """
+        self.direction = direction
 
     def move(self,
              direction: str,
