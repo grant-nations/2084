@@ -37,20 +37,20 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
    
    For example, using [venv](https://docs.python.org/3/library/venv.html): 
    ```
-   python venv path/to/twenty84/.venv
+   python venv path/to/2084/.venv
    ``` 
 
 2. Activate virtual environment (optional)
    ```
-   source path/to/twenty84/.venv/bin/activate
+   source path/to/2084/.venv/bin/activate
    ```
 3. Install [pygame](https://www.pygame.org/news)
    ```
-   pip install -r path/to/twenty84/requirements.txt
+   pip install -r path/to/2084/requirements.txt
    ```
 4. Launch game
    ```
-   python path/to/twenty84/twenty_84.py
+   python path/to/2084/twenty_84.py
    ```
 #### Windows
 ---
@@ -58,27 +58,27 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
    
    For example, using [venv](https://docs.python.org/3/library/venv.html): 
    ```
-   python venv path\to\twenty84\.venv
+   python venv path\to\2084\.venv
    ``` 
 
 2. Activate virtual environment (optional)
 
     Using Command Prompt:
    ```
-   path\to\twenty84\Scripts\activate.bat
+   path\to\2084\Scripts\activate.bat
    ```
     Using Powershell:
    ```
-   path\to\twenty84\Scripts\Activate.ps1
+   path\to\2084\Scripts\Activate.ps1
    ```
 
 3. Install [pygame](https://www.pygame.org/news)
    ```
-   pip install -r path\to\twenty84\requirements.txt
+   pip install -r path\to\2084\requirements.txt
    ```
 4. Launch game
    ```
-   python path\to\twenty84\twenty_84.py
+   python path\to\2084\twenty_84.py
    ```
 
 ---
