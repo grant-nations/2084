@@ -19,7 +19,7 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
 | Proto Y | ![Proto Y](https://github.com/grant-nations/2084/raw/main/data/green_02.png)   | 80     | Laser   | Sporratic  | 4          |
 | Player  | ![Player](https://github.com/grant-nations/2084/raw/main/data/player.png)      |        | Laser   | Horizontal |            |
 
-### Game Commands
+#### Commands
 
 | Action     | Key        |
 | ---------- | ---------- |
@@ -28,8 +28,8 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
 | Fire       | `SPACE`    |
 | Pause      | `ESC`      |
 
-## Setup
 ---
+## Setup
 
 #### Linux/MacOS (bash)
 ---
