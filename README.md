@@ -31,54 +31,50 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
 ---
 ## Setup
 
-#### Linux/MacOS (bash)
----
-1. Set up virtual environment (optional)
-   
-   For example, using [venv](https://docs.python.org/3/library/venv.html): 
+0. Clone repository
    ```
-   python venv path/to/2084/.venv
+   git clone https://github.com/grant-nations/2084.git .
+   ```
+
+   The folder that 2084 is cloned into will be referred to as (2084) in following steps.
+
+   ---
+   
+1. Create virtual environment <span style="color:cyan">**(OPTIONAL)**</span>
+   
+   *Note: if this step is skipped, pygame will be installed globally in step 2, but can be uninstalled just as easily with* `pip uninstall pygame`
+
+   For example, using [venv](https://docs.python.org/3/library/venv.html): 
+
+
+   #### Linux/MacOS (Bash)
+   ```
+   python venv (2084)/.venv
+   ```
+
+   ```
+   source (2084)/.venv/bin/activate
    ``` 
 
-2. Activate virtual environment (optional)
+   #### Windows (Powershell)
    ```
-   source path/to/2084/.venv/bin/activate
+   python venv (2084)\.venv
    ```
-3. Install [pygame](https://www.pygame.org/news)
    ```
-   pip install -r path/to/2084/requirements.txt
-   ```
-4. Launch game
-   ```
-   python path/to/2084/twenty_84.py
-   ```
-#### Windows
----
-1. Set up virtual environment (optional)
-   
-   For example, using [venv](https://docs.python.org/3/library/venv.html): 
-   ```
-   python venv path\to\2084\.venv
+   (2084)\Scripts\Activate.ps1
    ``` 
 
-2. Activate virtual environment (optional)
+   ---
+2. Install [pygame](https://www.pygame.org/news)
 
-    Using Command Prompt:
    ```
-   path\to\2084\Scripts\activate.bat
-   ```
-    Using Powershell:
-   ```
-   path\to\2084\Scripts\Activate.ps1
+   pip install -r (2084)/requirements.txt
    ```
 
-3. Install [pygame](https://www.pygame.org/news)
+   ---
+3. Launch game
    ```
-   pip install -r path\to\2084\requirements.txt
-   ```
-4. Launch game
-   ```
-   python path\to\2084\twenty_84.py
+   python (2084)/twenty_84.py
    ```
 
 ---
