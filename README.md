@@ -49,7 +49,7 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
 
    #### Linux/MacOS (Bash)
    ```
-   python venv (2084)/.venv
+   python -m venv (2084)/.venv
    ```
 
    ```
@@ -58,7 +58,7 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
 
    #### Windows (Powershell)
    ```
-   python venv (2084)\.venv
+   python -m venv (2084)\.venv
    ```
    ```
    (2084)\Scripts\Activate.ps1
