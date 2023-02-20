@@ -32,12 +32,12 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
 ## Setup
 
 0. Clone repository
-   ```
-   git clone https://github.com/grant-nations/2084.git .
-   ```
 
-   The folder that 2084 is cloned into will be referred to as (2084) in following steps.
+   The folder that 2084 is cloned into will be referred to as `(2084 dir)` in following steps.
 
+   ```
+   git clone https://github.com/grant-nations/2084.git (2084 dir)
+   ```
    ---
    
 1. Create virtual environment <span style="color:cyan">**(OPTIONAL)**</span>
@@ -49,32 +49,32 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
 
    #### Linux/MacOS (Bash)
    ```
-   python -m venv (2084)/.venv
+   python -m venv (2084 dir)/.venv
    ```
 
    ```
-   source (2084)/.venv/bin/activate
+   source (2084 dir)/.venv/bin/activate
    ``` 
 
    #### Windows (Powershell)
    ```
-   python -m venv (2084)\.venv
+   python -m venv (2084 dir)\.venv
    ```
    ```
-   (2084)\Scripts\Activate.ps1
+   (2084 dir)\Scripts\Activate.ps1
    ``` 
 
    ---
 2. Install [pygame](https://www.pygame.org/news)
 
    ```
-   pip install -r (2084)/requirements.txt
+   pip install -r (2084 dir)/requirements.txt
    ```
 
    ---
 3. Launch game
    ```
-   python (2084)/twenty_84.py
+   python (2084 dir)/twenty_84.py
    ```
 
 ---
