@@ -16,7 +16,7 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
 | Proto S | ![Proto S](https://github.com/grant-nations/2084/raw/main/data/orange_04.png)  | 50     | Laser   | Diagonal   | 2          |
 | Proto 3 | ![Proto 3](https://github.com/grant-nations/2084/raw/main/data/red_03.png)     | 10     | Laser   | Winding    | 1          |
 | Proto X | ![Proto X](https://github.com/grant-nations/2084/raw/main/data/metalic_06.png) | 100    | Missile | Horizontal | 5          |
-| Proto Y | ![Proto Y](https://github.com/grant-nations/2084/raw/main/data/green_02.png)   | 80     | Laser   | Sporratic  | 4          |
+| Proto Y | ![Proto Y](https://github.com/grant-nations/2084/raw/main/data/green_02.png)   | 80     | Laser   | Sporadic   | 4          |
 | Player  | ![Player](https://github.com/grant-nations/2084/raw/main/data/player.png)      |        | Laser   | Horizontal |            |
 
 #### Commands

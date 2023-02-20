@@ -143,6 +143,8 @@ class ProtoS(Tesla):
 class Proto3(Tesla):
     """Model 3 is the second slowest Tesla"""
 
+    laser_cool_down = 1000  # frames
+
     def __init__(self,
                  x: int,
                  y: int,
@@ -155,19 +157,27 @@ class Proto3(Tesla):
         self.rect.x = x
         self.rect.y = y
         self.speed = 1
-        self.laser_cool_down = 1000  # frames
         self.laser_counter = 0
-        self.laser_timer = random.randint(1, self.laser_cool_down)
+        self.laser_timer = random.randint(1, Proto3.laser_cool_down)
         self.points = 10
         self.thruster = Thruster(centerx=self.rect.centerx,
                                  y=self.rect.top,
                                  data_dir=data_dir,
                                  inverted=True)
 
+    @classmethod
+    def reset_fire_rate(cls):
+        cls.laser_cool_down = 1000
+
+    @classmethod
+    def boost_fire_rate(cls):
+        if cls.laser_cool_down > 600:
+            cls.laser_cool_down -= 100
+
     def animate(self):
         self.thruster.rect.centerx = self.rect.centerx
-        self.thruster.rect.bottom = self.rect.y + 8
-        self.thruster.animate(direction=VERTICAL_THRUST)
+        self.thruster.rect.bottom = self.rect.y + 9
+        self.thruster.animate(direction=self.direction, offset_x=5)
 
     def get_laser(self,
                   data_dir: str):
@@ -198,6 +208,24 @@ class Proto3(Tesla):
     def move_down(self):
         self.direction = VERTICAL_THRUST
         self.rect.y += self.speed
+
+    def update(self):
+        """Update the Tesla"""
+
+        if not self.is_alive:
+            self.kill()
+            self.thruster.kill()
+
+        self.move()
+
+        if self.laser_counter == self.laser_timer:
+            self.shoot_laser()
+            self.laser_counter = 0
+            self.laser_timer = random.randint(1, Proto3.laser_cool_down)
+        else:
+            self.laser_counter += 1
+
+        self.animate()
 
 
 class ProtoX(Tesla):
@@ -233,7 +261,6 @@ class ProtoX(Tesla):
 
     def get_laser(self, data_dir: str):
 
-        # TODO: change this to not load from disk every time
         return Projectile(centerx=self.rect.centerx,
                           y=self.rect.bottom,
                           direction=PROJECTILE_DOWN,
@@ -307,7 +334,7 @@ class ProtoY(Tesla):
 
         self.move_y_cooldown = 90  # frames
         self.move_y_timer = random.randint(1, self.move_y_cooldown)
-        self.y_move_frames = 5
+        self.y_move_frames = 10
 
     def animate(self):
         self.thruster.rect.centerx = self.rect.centerx
@@ -326,21 +353,6 @@ class ProtoY(Tesla):
 
     def move(self) -> None:
 
-        # perform random vertical movement
-        if self.y_move_frames > 0:
-            self.rect.y += self.speed
-            self.y_move_frames -= 1
-            return
-
-        if self.move_y_timer == 0:
-            self.rect.y += self.speed * 2
-            self.move_y_timer = random.randint(1, self.move_y_cooldown)
-            self.y_move_frames = 5
-            self.direction = VERTICAL_THRUST
-            return
-        else:
-            self.move_y_timer -= 1
-
         # perform horizontal movement
         x_speed = self.speed
 
@@ -355,6 +367,21 @@ class ProtoY(Tesla):
             self.direction = LEFT_THRUST
         else:
             self.direction = RIGHT_THRUST
+
+        # perform random vertical movement
+        if self.y_move_frames > 0:
+            self.rect.y += self.speed
+            self.y_move_frames -= 1
+            return
+
+        if self.move_y_timer == 0:
+            self.rect.y += self.speed * 2
+            self.move_y_timer = random.randint(1, self.move_y_cooldown)
+            self.y_move_frames = 10
+            self.direction = VERTICAL_THRUST
+            return
+        else:
+            self.move_y_timer -= 1
 
     def reverse_direction(self):
         self.reverse = not self.reverse

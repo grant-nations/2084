@@ -6,9 +6,11 @@ from src.explosion import Explosion
 from pygame.sprite import Group, spritecollide, spritecollideany
 import pygame
 from utils.utils import load_image, load_font
+import random
 
 
 class Twenty84Game(object):
+
     def __init__(self,
                  screen_width: int,
                  screen_height: int,
@@ -56,6 +58,9 @@ class Twenty84Game(object):
         self.font = load_font(font_dir=data_dir,
                               font_name='upheavtt.ttf',
                               size=24)
+        self.title_font = load_font(font_dir=data_dir,
+                                    font_name='upheavtt.ttf',
+                                    size=48)
 
         self.player = self._make_player()
         self.player_group.add(self.player)
@@ -69,6 +74,7 @@ class Twenty84Game(object):
         while playing:
             if restart:
                 self._reset_game()
+                restart = False
 
             self._draw_start_screen()
             self._draw_initial()
@@ -76,8 +82,11 @@ class Twenty84Game(object):
             while self._player_has_lives():
 
                 if self.paused:
-                    self._draw_paused_screen()
+                    restart = self._draw_paused_screen()
                     self.paused = False
+
+                    if restart:
+                        break
 
                 if self.player_invincible:
                     self._decrement_invincibility()
@@ -113,8 +122,9 @@ class Twenty84Game(object):
 
                 self.clock.tick(self.fps)
 
-            playing = self._draw_game_over()
-            restart = True
+            if not restart:
+                playing = self._draw_game_over()
+                restart = True
 
     def _reset_game(self):
         self.player_group.empty()
@@ -146,6 +156,8 @@ class Twenty84Game(object):
         self.player_group.add(self.player.thruster)
         self.paused = False
 
+        Proto3.reset_fire_rate()
+
     def _game_over_screen(self):
         while True:
             for event in pygame.event.get():
@@ -165,18 +177,19 @@ class Twenty84Game(object):
             self.clock.tick(self.fps)
 
     def _handle_tesla_player_collisions(self):
-        for tesla in self.enemies_to_draw:
-            if tesla.rect.colliderect(self.player.rect):
-                self.explosions.add(Explosion(center=self.player.rect.center,
-                                              data_dir=self.data_dir))
-                self.explosions.add(Explosion(center=tesla.rect.center,
-                                              data_dir=self.data_dir))
-                tesla.mark_for_deletion()
-                self.player_dead = True
-                self.player_lives -= 1
-                self.player.die()
-                self.player_invincible = True
-                self.respawn_frames = self.fps * 2
+        if not self.player_invincible and not self.player_dead:
+            for tesla in self.enemies_to_draw:
+                if tesla.rect.colliderect(self.player.rect):
+                    self.explosions.add(Explosion(center=self.player.rect.center,
+                                                  data_dir=self.data_dir))
+                    self.explosions.add(Explosion(center=tesla.rect.center,
+                                                  data_dir=self.data_dir))
+                    tesla.mark_for_deletion()
+                    self.player_dead = True
+                    self.player_lives -= 1
+                    self.player.die()
+                    self.player_invincible = True
+                    self.respawn_frames = self.fps * 2
 
     def _handle_tesla_laser_collisions(self):
         for tesla in self.enemies_to_draw:
@@ -310,15 +323,15 @@ class Twenty84Game(object):
             else:
                 x_pos += proto_3.rect.width + self.padding
 
-        # proto y: sporratic motion
+        # proto y: sporadic motion
         # start spawning at wave 4
         num_y = self.wave_num // 4
 
-        x_pos = self.screen_width // 2 - TESLA_WIDTH // 2
         y_pos = self.padding + self.banner_height
 
         for i in range(1, num_y + 1):
-
+            x_pos = random.randint(self.padding, self.screen_width -
+                                   TESLA_WIDTH - self.padding)
             proto_y = ProtoY(x=x_pos,
                              y=y_pos,
                              data_dir=self.data_dir)
@@ -328,15 +341,25 @@ class Twenty84Game(object):
         # start spawning at wave 5
         num_x = self.wave_num // 5
 
-        x_pos = self.screen_width // 2 - TESLA_WIDTH // 2
         y_pos = self.padding + self.banner_height
 
         for i in range(1, num_x + 1):
-
+            x_pos = random.randint(self.padding, self.screen_width -
+                                   TESLA_WIDTH - self.padding)
             proto_x = ProtoX(x=x_pos,
                              y=y_pos,
                              data_dir=self.data_dir)
             self.proto_x_teslas.add(proto_x)
+
+        self._update_proto_3_firerate()
+
+    def _update_proto_3_firerate(self):
+        """Update the fire rate of the proto 3 teslas."""
+
+        # increase the fire rate of the proto 3 teslas
+        # every 3 waves
+        if self.wave_num % 3 == 0:
+            Proto3.boost_fire_rate()
 
     def _update_wave(self):
         """Update the wave of enemies."""
@@ -571,7 +594,7 @@ class Twenty84Game(object):
                 if event.type == pygame.QUIT:
                     exit()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_RETURN:
                         play_again = True
                     elif event.key == pygame.K_ESCAPE:
                         exit()
@@ -587,21 +610,22 @@ class Twenty84Game(object):
             self.explosions.draw(self.screen)
             self._draw_banner()
 
-            game_over_text = self.font.render(
-                f'GAME OVER', True, self.font_color)
+            game_over_text = self.title_font.render(
+                f'GAME OVER', True, (255, 0, 0))
             self.screen.blit(game_over_text, ((self.screen_width -
                                                game_over_text.get_width())/2, (self.screen_height -
-                                                                               game_over_text.get_height())/2 - 50))
+                                                                               game_over_text.get_height())/2 - 100))
             play_again_text = self.font.render(
-                f'PRESS SPACE TO RETURN TO START', True, self.font_color)
+                f'RETURN TO START: ENTER', True, self.font_color)
             self.screen.blit(play_again_text, ((self.screen_width -
                                                 play_again_text.get_width())/2, (self.screen_height -
                                                                                  play_again_text.get_height())/2))
             quit_text = self.font.render(
-                f'PRESS ESC TO QUIT', True, self.font_color)
+                f'QUIT: ESC', True, self.font_color)
             self.screen.blit(quit_text, ((self.screen_width -
                                           quit_text.get_width())/2, (self.screen_height -
                                                                      quit_text.get_height())/2 + 50))
+
             pygame.display.flip()
 
         return play_again
@@ -616,8 +640,9 @@ class Twenty84Game(object):
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         paused = False
+                        return False
                     if event.key == pygame.K_ESCAPE:
-                        exit()
+                        return True
 
             self.screen.blit(self.background, (0, 0))
             self.player_group.draw(self.screen)
@@ -634,13 +659,13 @@ class Twenty84Game(object):
                                            pause_text.get_width())/2, (self.screen_height -
                                                                        pause_text.get_height())/2 - 50))
             continue_text = self.font.render(
-                f'PRESS SPACE TO CONTINUE', True, self.font_color)
+                f'CONTINUE: SPACE', True, self.font_color)
             self.screen.blit(continue_text, ((self.screen_width -
                                               continue_text.get_width())/2, (self.screen_height -
                                                                              continue_text.get_height())/2))
 
             quit_text = self.font.render(
-                f'PRESS ESC TO QUIT', True, self.font_color)
+                f'RETURN TO START: ESC', True, self.font_color)
             self.screen.blit(quit_text, ((self.screen_width -
                                           quit_text.get_width())/2, (self.screen_height -
                                                                      quit_text.get_height())/2 + 50))
@@ -661,19 +686,19 @@ class Twenty84Game(object):
                         exit()
             self.screen.blit(self.background, (0, 0))
 
-            title_text = self.font.render(
+            title_text = self.title_font.render(
                 f'2084', True, self.font_color)
             self.screen.blit(title_text, ((self.screen_width -
                                            title_text.get_width())/2, (self.screen_height - title_text.get_height())/2 - 100))
 
             start_text = self.font.render(
-                f'PRESS SPACE TO START', True, self.font_color)
+                f'START: SPACE', True, self.font_color)
             self.screen.blit(start_text, ((self.screen_width -
                                            start_text.get_width())/2, (self.screen_height -
                                                                        start_text.get_height())/2))
 
             quit_text = self.font.render(
-                f'PRESS ESC TO QUIT', True, self.font_color)
+                f'QUIT: ESC', True, self.font_color)
             self.screen.blit(quit_text, ((self.screen_width -
                                           quit_text.get_width())/2, (self.screen_height -
                                                                      quit_text.get_height())/2 + 50))
