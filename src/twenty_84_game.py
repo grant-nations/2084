@@ -64,8 +64,12 @@ class Twenty84Game(object):
 
     def run(self):
 
+        restart = False
         playing = True
         while playing:
+            if restart:
+                self._reset_game()
+
             self._draw_start_screen()
             self._draw_initial()
 
@@ -110,6 +114,37 @@ class Twenty84Game(object):
                 self.clock.tick(self.fps)
 
             playing = self._draw_game_over()
+            restart = True
+
+    def _reset_game(self):
+        self.player_group.empty()
+        self.player_lasers.empty()
+        self.tesla_projectiles.empty()
+        self.proto_s_teslas.empty()
+        self.proto_3_teslas.empty()
+        self.proto_x_teslas.empty()
+        self.proto_y_teslas.empty()
+        self.enemies_to_draw.empty()
+        self.enemy_thrusters.empty()
+        self.explosions.empty()
+
+        self.wave_num = 0
+        self.wave_cooldown = 0
+        self.in_wave = False
+        self.score = 0
+
+        self.last_dir = None
+        self.curr_dir = None
+        self.delay_frames = self.fps  # 1 second
+        self.respawn_frames = self.fps * 2  # 2 seconds
+        self.player_lives = 3
+        self.player_dead = False
+        self.player_invincible = False
+
+        self.player = self._make_player()
+        self.player_group.add(self.player)
+        self.player_group.add(self.player.thruster)
+        self.paused = False
 
     def _game_over_screen(self):
         while True:
@@ -538,6 +573,8 @@ class Twenty84Game(object):
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         play_again = True
+                    elif event.key == pygame.K_ESCAPE:
+                        exit()
 
             self.explosions.update()
             self.player_group.update()
@@ -554,12 +591,17 @@ class Twenty84Game(object):
                 f'GAME OVER', True, self.font_color)
             self.screen.blit(game_over_text, ((self.screen_width -
                                                game_over_text.get_width())/2, (self.screen_height -
-                                                                               game_over_text.get_height())/2))
+                                                                               game_over_text.get_height())/2 - 50))
             play_again_text = self.font.render(
                 f'PRESS SPACE TO RETURN TO START', True, self.font_color)
             self.screen.blit(play_again_text, ((self.screen_width -
                                                 play_again_text.get_width())/2, (self.screen_height -
-                                                                                 play_again_text.get_height())/2 + 50))
+                                                                                 play_again_text.get_height())/2))
+            quit_text = self.font.render(
+                f'PRESS ESC TO QUIT', True, self.font_color)
+            self.screen.blit(quit_text, ((self.screen_width -
+                                          quit_text.get_width())/2, (self.screen_height -
+                                                                     quit_text.get_height())/2 + 50))
             pygame.display.flip()
 
         return play_again
@@ -590,18 +632,18 @@ class Twenty84Game(object):
                 f'PAUSED', True, self.font_color)
             self.screen.blit(pause_text, ((self.screen_width -
                                            pause_text.get_width())/2, (self.screen_height -
-                                                                       pause_text.get_height())/2))
+                                                                       pause_text.get_height())/2 - 50))
             continue_text = self.font.render(
                 f'PRESS SPACE TO CONTINUE', True, self.font_color)
             self.screen.blit(continue_text, ((self.screen_width -
                                               continue_text.get_width())/2, (self.screen_height -
-                                                                             continue_text.get_height())/2 + 50))
+                                                                             continue_text.get_height())/2))
 
             quit_text = self.font.render(
                 f'PRESS ESC TO QUIT', True, self.font_color)
             self.screen.blit(quit_text, ((self.screen_width -
                                           quit_text.get_width())/2, (self.screen_height -
-                                                                     quit_text.get_height())/2 + 100))
+                                                                     quit_text.get_height())/2 + 50))
 
             pygame.display.flip()
 
@@ -615,16 +657,24 @@ class Twenty84Game(object):
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         start = True
+                    if event.key == pygame.K_ESCAPE:
+                        exit()
             self.screen.blit(self.background, (0, 0))
 
             title_text = self.font.render(
                 f'2084', True, self.font_color)
             self.screen.blit(title_text, ((self.screen_width -
-                                           title_text.get_width())/2, (self.screen_height - title_text.get_height())/2))
+                                           title_text.get_width())/2, (self.screen_height - title_text.get_height())/2 - 100))
 
             start_text = self.font.render(
                 f'PRESS SPACE TO START', True, self.font_color)
             self.screen.blit(start_text, ((self.screen_width -
                                            start_text.get_width())/2, (self.screen_height -
-                                                                       start_text.get_height())/2 + 50))
+                                                                       start_text.get_height())/2))
+
+            quit_text = self.font.render(
+                f'PRESS ESC TO QUIT', True, self.font_color)
+            self.screen.blit(quit_text, ((self.screen_width -
+                                          quit_text.get_width())/2, (self.screen_height -
+                                                                     quit_text.get_height())/2 + 50))
             pygame.display.flip()
