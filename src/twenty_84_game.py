@@ -732,7 +732,7 @@ class Twenty84Game(object):
             self.screen.blit(self.background, (0, 0))
 
             title_text = self.title_font.render(
-                f'2084', True, self.font_color)
+                f'2084', True, (0, 255, 255))
             self.screen.blit(title_text, ((self.screen_width -
                                            title_text.get_width())/2, (self.screen_height - title_text.get_height())/2 - 100))
 
