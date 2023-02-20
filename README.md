@@ -8,20 +8,82 @@ Immortality is available to a select few, one of which is Elon Musk (of course).
 
 ## Setup
 
-1. Set up virtual environment
-2. Activate virtual environment
-3. pip install -r requirements.txt
-4. python twenty_84.py
+#### Linux/MacOS (bash)
+---
+1. Set up virtual environment (optional)
+   
+   For example, using [venv](https://docs.python.org/3/library/venv.html): 
+   ```
+   python venv path/to/twenty84/.venv
+   ``` 
 
-TODO
+2. Activate virtual environment (optional)
+   ```
+   source path/to/twenty84/.venv/bin/activate
+   ```
+3. Install [pygame](https://www.pygame.org/news)
+   ```
+   pip install -r path/to/twenty84/requirements.txt
+   ```
+4. Launch game
+   ```
+   python path/to/twenty84/twenty_84.py
+   ```
+#### Windows
+---
+1. Set up virtual environment (optional)
+   
+   For example, using [venv](https://docs.python.org/3/library/venv.html): 
+   ```
+   python venv path\to\twenty84\.venv
+   ``` 
+
+2. Activate virtual environment (optional)
+
+    Using Command Prompt:
+   ```
+   path\to\twenty84\Scripts\activate.bat
+   ```
+    Using Powershell:
+   ```
+   path\to\twenty84\Scripts\Activate.ps1
+   ```
+
+3. Install [pygame](https://www.pygame.org/news)
+   ```
+   pip install -r path\to\twenty84\requirements.txt
+   ```
+4. Launch game
+   ```
+   python path\to\twenty84\twenty_84.py
+   ```
 
 ---
+## Gameplay
 
-## How to play
-TODO
+
+
+The goal is to accumulate as many points as possible. Maybe if you get enough, immortal Elon will call of the seige. Different Telsa spaceships have different point values, weapons, and movements.
+
+| Ship    | Sprite                                                                         | Points | Weapon  | Movement   | Spawn Wave |
+| ------- | ------------------------------------------------------------------------------ | ------ | ------- | ---------- | ---------- |
+| Proto S | ![Proto S](https://github.com/grant-nations/2084/raw/main/data/orange_04.png)  | 50     | Laser   | Diagonal   | 2          |
+| Proto 3 | ![Proto 3](https://github.com/grant-nations/2084/raw/main/data/red_03.png)     | 10     | Laser   | Winding    | 1          |
+| Proto X | ![Proto X](https://github.com/grant-nations/2084/raw/main/data/metalic_06.png) | 100    | Missile | Horizontal | 5          |
+| Proto Y | ![Proto Y](https://github.com/grant-nations/2084/raw/main/data/green_02.png)   | 80     | Laser   | Sporratic  | 4          |
+| Player  | ![Player](https://github.com/grant-nations/2084/raw/main/data/player.png)      |        | Laser   | Horizontal |            |
+
+### Game Commands
+
+| Action     | Key        |
+| ---------- | ---------- |
+| Move left  | `A` or `⇐` |
+| Move right | `D` or `⇒` |
+| Fire       | `SPACE`    |
+| Pause      | `ESC`      |
+
 
 ---
-
 ## Artists
 
 - Spaceship sprites: [Dylestorm](https://livingtheindie.itch.io/)

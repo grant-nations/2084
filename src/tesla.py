@@ -89,7 +89,7 @@ class ProtoS(Tesla):
                  move_direction: int = RIGHT):
         Tesla.__init__(self)
         self.speed = 1
-        self.points = 80
+        self.points = 50
         self.image = load_image(image_dir=data_dir,
                                 img_name=PROTO_S_IMAGE,
                                 colorkey=-1)
@@ -288,7 +288,7 @@ class ProtoY(Tesla):
                  move_direction: int = VERTICAL_THRUST):
         Tesla.__init__(self)
         self.speed = 2
-        self.points = 50
+        self.points = 80
 
         self.image = load_image(image_dir=data_dir,
                                 img_name=PROTO_Y_IMAGE,
