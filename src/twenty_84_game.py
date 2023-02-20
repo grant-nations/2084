@@ -60,47 +60,56 @@ class Twenty84Game(object):
         self.player = self._make_player()
         self.player_group.add(self.player)
         self.player_group.add(self.player.thruster)
+        self.paused = False
 
     def run(self):
-        self._draw_initial()
 
-        while self._player_has_lives():
+        playing = True
+        while playing:
+            self._draw_start_screen()
+            self._draw_initial()
 
-            if self.player_invincible:
-                self._decrement_invincibility()
+            while self._player_has_lives():
 
-            if self.player_dead:
-                self._resurrect_player()
+                if self.paused:
+                    self._draw_paused_screen()
+                    self.paused = False
 
-            if self.in_wave:
-                if self.wave_cooldown > 0:
-                    self.wave_cooldown -= 1
+                if self.player_invincible:
+                    self._decrement_invincibility()
+
+                if self.player_dead:
+                    self._resurrect_player()
+
+                if self.in_wave:
+                    if self.wave_cooldown > 0:
+                        self.wave_cooldown -= 1
+                    else:
+                        self._update_wave()
                 else:
-                    self._update_wave()
-            else:
-                self._start_wave()
+                    self._start_wave()
 
-            self._handle_player_input()
-            self._fire_lasers()
-            self._clean_up_lasers()
-            self._check_tesla_at_bottom()
-            self._reverse_proto_3_group()
-            self._reverse_solo_teslas()
+                self._handle_player_input()
+                self._fire_lasers()
+                self._clean_up_lasers()
+                self._check_tesla_at_bottom()
+                self._reverse_proto_3_group()
+                self._reverse_solo_teslas()
 
-            # Check for collisions
-            if not self.player_invincible:
-                self._handle_player_laser_collisions()
+                # Check for collisions
+                if not self.player_invincible:
+                    self._handle_player_laser_collisions()
 
-            self._handle_tesla_laser_collisions()
-            self._handle_tesla_player_collisions()
-            self._handle_missile_laser_collisions()
+                self._handle_tesla_laser_collisions()
+                self._handle_tesla_player_collisions()
+                self._handle_missile_laser_collisions()
 
-            self._update_sprites()
-            self._draw()
+                self._update_sprites()
+                self._draw()
 
-            self.clock.tick(self.fps)
+                self.clock.tick(self.fps)
 
-        self._game_over_screen()
+            playing = self._draw_game_over()
 
     def _game_over_screen(self):
         while True:
@@ -431,6 +440,8 @@ class Twenty84Game(object):
                     self.curr_dir = PLAYER_RIGHT
                 elif event.key == pygame.K_SPACE:
                     self.player.shoot_laser()
+                elif event.key == pygame.K_ESCAPE:
+                    self.paused = True
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                     self.curr_dir = self.last_dir
@@ -516,3 +527,104 @@ class Twenty84Game(object):
                          lives_text.get_width() - self.padding, self.padding))
         self.screen.blit(round_text, ((self.screen_width -
                                        round_text.get_width())/2, self.padding))
+
+    def _draw_game_over(self):
+
+        play_again = False
+        while not play_again:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        play_again = True
+
+            self.explosions.update()
+            self.player_group.update()
+            self.screen.blit(self.background, (0, 0))
+            self.player_group.draw(self.screen)
+            self.tesla_projectiles.draw(self.screen)
+            self.player_lasers.draw(self.screen)
+            self.enemies_to_draw.draw(self.screen)
+            self.enemy_thrusters.draw(self.screen)
+            self.explosions.draw(self.screen)
+            self._draw_banner()
+
+            game_over_text = self.font.render(
+                f'GAME OVER', True, self.font_color)
+            self.screen.blit(game_over_text, ((self.screen_width -
+                                               game_over_text.get_width())/2, (self.screen_height -
+                                                                               game_over_text.get_height())/2))
+            play_again_text = self.font.render(
+                f'PRESS SPACE TO RETURN TO START', True, self.font_color)
+            self.screen.blit(play_again_text, ((self.screen_width -
+                                                play_again_text.get_width())/2, (self.screen_height -
+                                                                                 play_again_text.get_height())/2 + 50))
+            pygame.display.flip()
+
+        return play_again
+
+    def _draw_paused_screen(self):
+
+        paused = True
+        while paused:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        paused = False
+                    if event.key == pygame.K_ESCAPE:
+                        exit()
+
+            self.screen.blit(self.background, (0, 0))
+            self.player_group.draw(self.screen)
+            self.tesla_projectiles.draw(self.screen)
+            self.player_lasers.draw(self.screen)
+            self.enemies_to_draw.draw(self.screen)
+            self.enemy_thrusters.draw(self.screen)
+            self.explosions.draw(self.screen)
+            self._draw_banner()
+
+            pause_text = self.font.render(
+                f'PAUSED', True, self.font_color)
+            self.screen.blit(pause_text, ((self.screen_width -
+                                           pause_text.get_width())/2, (self.screen_height -
+                                                                       pause_text.get_height())/2))
+            continue_text = self.font.render(
+                f'PRESS SPACE TO CONTINUE', True, self.font_color)
+            self.screen.blit(continue_text, ((self.screen_width -
+                                              continue_text.get_width())/2, (self.screen_height -
+                                                                             continue_text.get_height())/2 + 50))
+
+            quit_text = self.font.render(
+                f'PRESS ESC TO QUIT', True, self.font_color)
+            self.screen.blit(quit_text, ((self.screen_width -
+                                          quit_text.get_width())/2, (self.screen_height -
+                                                                     quit_text.get_height())/2 + 100))
+
+            pygame.display.flip()
+
+    def _draw_start_screen(self):
+
+        start = False
+        while not start:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        start = True
+            self.screen.blit(self.background, (0, 0))
+
+            title_text = self.font.render(
+                f'2084', True, self.font_color)
+            self.screen.blit(title_text, ((self.screen_width -
+                                           title_text.get_width())/2, (self.screen_height - title_text.get_height())/2))
+
+            start_text = self.font.render(
+                f'PRESS SPACE TO START', True, self.font_color)
+            self.screen.blit(start_text, ((self.screen_width -
+                                           start_text.get_width())/2, (self.screen_height -
+                                                                       start_text.get_height())/2 + 50))
+            pygame.display.flip()
