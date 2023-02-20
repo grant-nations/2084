@@ -1,21 +1,30 @@
-from src.tesla import Proto3, ProtoS, ProtoX, ProtoY, TESLA_WIDTH, TESLA_HEIGHT, LEFT, RIGHT
+import pygame
+from src.tesla import Proto3, ProtoS, ProtoX, ProtoY, TESLA_WIDTH, LEFT, RIGHT
 from src.player import Player, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_LEFT, PLAYER_RIGHT, PLAYER_VERTICAL
 from src.projectile import Projectile, PROJECTILE_UP
 from utils.projectile_utils import MISSILE, ORANGE_LASER
-from src.explosion import Explosion
 from pygame.sprite import Group, spritecollide, spritecollideany
-import pygame
+from utils.explosion_utils import get_explosion_images
 from utils.utils import load_image, load_font
+from src.explosion import Explosion
 import random
 
 
 class Twenty84Game(object):
+    """Main game class"""
 
     def __init__(self,
                  screen_width: int,
                  screen_height: int,
                  fps: int,
-                 data_dir: str):
+                 data_dir: str) -> None:
+        """
+        :param screen_width: The width of the game screen
+        :param screen_height: The height of the game screen
+        :param fps: The frames per second of the game
+        :param data_dir: The directory where the game files are located
+        """
+
         super().__init__()
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -35,7 +44,7 @@ class Twenty84Game(object):
         self.proto_3_teslas = Group()
         self.proto_x_teslas = Group()
         self.proto_y_teslas = Group()
-        self.enemies_to_draw = Group()
+        self.spawned_enemies = Group()
         self.enemy_thrusters = Group()
         self.explosions = Group()
 
@@ -67,7 +76,8 @@ class Twenty84Game(object):
         self.player_group.add(self.player.thruster)
         self.paused = False
 
-    def run(self):
+    def run(self) -> None:
+        """Run the game"""
 
         restart = False
         playing = True
@@ -126,7 +136,9 @@ class Twenty84Game(object):
                 playing = self._draw_game_over()
                 restart = True
 
-    def _reset_game(self):
+    def _reset_game(self) -> None:
+        """Reset the game"""
+
         self.player_group.empty()
         self.player_lasers.empty()
         self.tesla_projectiles.empty()
@@ -134,7 +146,7 @@ class Twenty84Game(object):
         self.proto_3_teslas.empty()
         self.proto_x_teslas.empty()
         self.proto_y_teslas.empty()
-        self.enemies_to_draw.empty()
+        self.spawned_enemies.empty()
         self.enemy_thrusters.empty()
         self.explosions.empty()
 
@@ -158,7 +170,14 @@ class Twenty84Game(object):
 
         Proto3.reset_fire_rate()
 
-    def _game_over_screen(self):
+    def _game_over_screen(self) -> bool:
+        """
+        Draw the game over screen and return whether the player wants to
+        restart the game
+
+        :return: True if the player wants to restart the game, False otherwise
+        """
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -170,15 +189,17 @@ class Twenty84Game(object):
             self.player_group.draw(self.screen)
             self.tesla_projectiles.draw(self.screen)
             self.player_lasers.draw(self.screen)
-            self.enemies_to_draw.draw(self.screen)
+            self.spawned_enemies.draw(self.screen)
             self.enemy_thrusters.draw(self.screen)
             self.explosions.draw(self.screen)
             pygame.display.flip()
             self.clock.tick(self.fps)
 
-    def _handle_tesla_player_collisions(self):
+    def _handle_tesla_player_collisions(self) -> None:
+        """Handle collisions between the player and teslas"""
+
         if not self.player_invincible and not self.player_dead:
-            for tesla in self.enemies_to_draw:
+            for tesla in self.spawned_enemies:
                 if tesla.rect.colliderect(self.player.rect):
                     self.explosions.add(Explosion(center=self.player.rect.center,
                                                   data_dir=self.data_dir))
@@ -191,8 +212,10 @@ class Twenty84Game(object):
                     self.player_invincible = True
                     self.respawn_frames = self.fps * 2
 
-    def _handle_tesla_laser_collisions(self):
-        for tesla in self.enemies_to_draw:
+    def _handle_tesla_laser_collisions(self) -> None:
+        """Handle collisions between teslas and lasers"""
+
+        for tesla in self.spawned_enemies:
             for laser in self.player_lasers:
                 if tesla.rect.colliderect(laser.rect):
                     laser.mark_for_deletion()
@@ -201,7 +224,9 @@ class Twenty84Game(object):
                     self.explosions.add(Explosion(center=tesla.rect.center,
                                                   data_dir=self.data_dir))
 
-    def _handle_player_laser_collisions(self):
+    def _handle_player_laser_collisions(self) -> None:
+        """Handle collisions between the player and lasers"""
+
         hit_list = spritecollide(self.player, self.tesla_projectiles, False)
         if len(hit_list) > 0:
             self.explosions.add(Explosion(center=self.player.rect.center,
@@ -214,7 +239,9 @@ class Twenty84Game(object):
             for laser in hit_list:
                 laser.mark_for_deletion()
 
-    def _handle_missile_laser_collisions(self):
+    def _handle_missile_laser_collisions(self) -> None:
+        """Handle collisions between missiles and lasers"""
+
         for proj in self.tesla_projectiles:
             if proj.projectile_type == MISSILE:
                 for laser in self.player_lasers:
@@ -224,15 +251,19 @@ class Twenty84Game(object):
                         self.explosions.add(Explosion(center=proj.rect.center,
                                                       data_dir=self.data_dir))
 
-    def _check_tesla_at_bottom(self):
-        for tesla in self.enemies_to_draw:
+    def _check_tesla_at_bottom(self) -> None:
+        """Check if any teslas have reached the bottom of the screen"""
+
+        for tesla in self.spawned_enemies:
             if tesla.rect.bottom > self.screen_height:
                 self.player_lives = 0
                 return
 
-    def _reverse_proto_3_group(self):
+    def _reverse_proto_3_group(self) -> None:
+        """Reverse the direction of the proto 3 teslas"""
+
         reverse_direction = False
-        for tesla in self.enemies_to_draw:
+        for tesla in self.spawned_enemies:
             # check if we need to reverse the direction of the
             # group of proto 3 teslas
             if type(tesla) is Proto3:
@@ -241,18 +272,22 @@ class Twenty84Game(object):
                     break
 
         if reverse_direction:
-            for tesla in self.enemies_to_draw:
+            for tesla in self.spawned_enemies:
                 if type(tesla) is Proto3:
                     tesla.reverse_direction()
                     tesla.move_down()
 
-    def _reverse_solo_teslas(self):
-        for tesla in self.enemies_to_draw:
+    def _reverse_solo_teslas(self) -> None:
+        """Reverse the direction of Telsas not part of the proto 3 group"""
+
+        for tesla in self.spawned_enemies:
             if type(tesla) is not Proto3:
                 if tesla.rect.left < self.padding or tesla.rect.right > self.screen_width - self.padding:
                     tesla.reverse_direction()
 
-    def _clean_up_lasers(self):
+    def _clean_up_lasers(self) -> None:
+        """Delete lasers that are off the screen"""
+
         # Delete lasers that are off the screen
         for laser in self.player_lasers:
             if laser.rect.y < 0 or laser.rect.y > self.screen_height + laser.rect.height:
@@ -262,7 +297,9 @@ class Twenty84Game(object):
             if laser.rect.y < 0 or laser.rect.y > self.screen_height + laser.rect.height:
                 laser.mark_for_deletion()
 
-    def _start_wave(self):
+    def _start_wave(self) -> None:
+        """Start a new wave of teslas"""
+
         self.wave_num += 1
         self.in_wave = True
         self.wave_cooldown = self.fps * 2  # 2 seconds
@@ -271,7 +308,7 @@ class Twenty84Game(object):
         self.proto_3_teslas.empty()
         self.proto_x_teslas.empty()
         self.proto_y_teslas.empty()
-        self.enemies_to_draw.empty()
+        self.spawned_enemies.empty()
         self.enemy_thrusters.empty()
 
         # -3 to leave space for movement
@@ -353,7 +390,7 @@ class Twenty84Game(object):
 
         self._update_proto_3_firerate()
 
-    def _update_proto_3_firerate(self):
+    def _update_proto_3_firerate(self) -> None:
         """Update the fire rate of the proto 3 teslas."""
 
         # increase the fire rate of the proto 3 teslas
@@ -361,40 +398,47 @@ class Twenty84Game(object):
         if self.wave_num % 3 == 0:
             Proto3.boost_fire_rate()
 
-    def _update_wave(self):
+    def _try_spawn_single_enemy(self, enemy_group: Group) -> None:
+        """Try to spawn a single enemy from the given group."""
+
+        can_spawn = True
+        for tesla in self.spawned_enemies.sprites():
+
+            if spritecollideany(tesla,
+                                enemy_group,
+                                collided=lambda s1, s2: (s1.rect.top - self.padding) <= s2.rect.bottom):
+                can_spawn = False
+                break
+
+            if spritecollideany(tesla, self.explosions):
+                can_spawn = False
+                break
+
+        if can_spawn and len(enemy_group.sprites()) > 0:
+            # remove from enemy group
+            tesla = enemy_group.sprites()[0]
+            enemy_group.remove(tesla)
+            self.spawned_enemies.add(tesla)
+            self.enemy_thrusters.add(tesla.thruster)
+            return
+
+    def _update_wave(self) -> None:
         """Update the wave of enemies."""
 
         # if there are no more enemies to spawn and no enemies on the screen
         # and all enemies have been destroyed, then the wave is over
         if (len(self.proto_s_teslas) == 0 and len(self.proto_3_teslas) == 0 and
             len(self.proto_x_teslas) == 0 and len(self.proto_y_teslas) == 0 and
-                len(self.enemies_to_draw) == 0):
+                len(self.spawned_enemies) == 0):
             self.in_wave = False
             return
 
-        can_spawn_proto_s = True
-        for tesla in self.enemies_to_draw.sprites():
+        # try to spawn a proto s
+        self._try_spawn_single_enemy(self.proto_s_teslas)
 
-            if spritecollideany(tesla,
-                                self.proto_s_teslas,
-                                collided=lambda s1, s2: (s1.rect.top - self.padding) <= s2.rect.bottom):
-                can_spawn_proto_s = False
-                break
-
-            if spritecollideany(tesla, self.explosions):
-                can_spawn_proto_s = False
-                break
-
-        if can_spawn_proto_s and len(self.proto_s_teslas.sprites()) > 0:
-            # remove from proto s teslas
-            tesla = self.proto_s_teslas.sprites()[0]
-            self.proto_s_teslas.remove(tesla)
-            self.enemies_to_draw.add(tesla)  # add to enemies to draw
-            self.enemy_thrusters.add(tesla.thruster)
-            return
-
+        # try to spawn the proto 3 group
         can_spawn_proto_3 = True
-        for tesla in self.enemies_to_draw.sprites():
+        for tesla in self.spawned_enemies.sprites():
 
             if spritecollideany(tesla,
                                 self.proto_3_teslas,
@@ -409,62 +453,37 @@ class Twenty84Game(object):
         if can_spawn_proto_3:
             for tesla in self.proto_3_teslas.sprites():
                 self.proto_3_teslas.remove(tesla)
-                self.enemies_to_draw.add(tesla)
+                self.spawned_enemies.add(tesla)
                 self.enemy_thrusters.add(tesla.thruster)
 
-        can_spawn_proto_y = True
-        for tesla in self.enemies_to_draw.sprites():
+        # try to spawn a proto y
+        self._try_spawn_single_enemy(self.proto_y_teslas)
 
-            if spritecollideany(tesla,
-                                self.proto_y_teslas,
-                                collided=lambda s1, s2: (s1.rect.top - self.padding) <= s2.rect.bottom):
-                can_spawn_proto_y = False
-                break
+        # try to spawn a proto x
+        self._try_spawn_single_enemy(self.proto_x_teslas)
 
-            if spritecollideany(tesla, self.explosions):
-                can_spawn_proto_y = False
-                break
+    def _make_player(self) -> Player:
+        """
+        Make a new player.
 
-        if can_spawn_proto_y and len(self.proto_y_teslas.sprites()) > 0:
-            tesla = self.proto_y_teslas.sprites()[0]
-            self.proto_y_teslas.remove(tesla)
-            self.enemies_to_draw.add(tesla)
-            self.enemy_thrusters.add(tesla.thruster)
+        :return: the new player
+        """
 
-        can_spawn_proto_x = len(self.proto_s_teslas) == 0 and len(
-            self.proto_3_teslas) == 0 and len(self.proto_y_teslas) == 0
-
-        if can_spawn_proto_x:
-            for tesla in self.enemies_to_draw.sprites():
-
-                if spritecollideany(tesla,
-                                    self.proto_x_teslas,
-                                    collided=lambda s1, s2: (s1.rect.top - self.padding) <= s2.rect.bottom):
-                    can_spawn_proto_x = False
-                    break
-
-                if spritecollideany(tesla, self.explosions):
-                    can_spawn_proto_x = False
-                    break
-
-        if can_spawn_proto_x and len(self.proto_x_teslas.sprites()) > 0:
-            tesla = self.proto_x_teslas.sprites()[0]
-            self.proto_x_teslas.remove(tesla)
-            self.enemies_to_draw.add(tesla)
-            self.enemy_thrusters.add(tesla.thruster)
-
-    def _make_player(self):
         return Player(x=(self.screen_width - PLAYER_WIDTH)/2,
                       y=self.screen_height - PLAYER_HEIGHT - 3 * self.padding,
                       data_dir=self.data_dir)
 
-    def _decrement_invincibility(self):
+    def _decrement_invincibility(self) -> None:
+        """Decrement the invincibility frames."""
+
         if self.respawn_frames > 0:
             self.respawn_frames -= 1
         else:
             self.player_invincible = False
 
-    def _resurrect_player(self):
+    def _resurrect_player(self) -> None:
+        """Resurrect the player."""
+
         if self.delay_frames == 0:
             self.player_dead = False
 
@@ -485,7 +504,9 @@ class Twenty84Game(object):
         else:
             self.delay_frames -= 1
 
-    def _handle_player_input(self):
+    def _handle_player_input(self) -> None:
+        """Handle the player input."""
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -527,7 +548,9 @@ class Twenty84Game(object):
         else:
             self.player.set_direction(PLAYER_VERTICAL)
 
-    def _fire_lasers(self):
+    def _fire_lasers(self) -> None:
+        """Fire the lasers from the player and the enemies."""
+
         if self.player.firing and not self.player_dead:
             self.player_lasers.add(Projectile(centerx=self.player.rect.centerx,
                                               y=self.player.rect.y,
@@ -536,41 +559,56 @@ class Twenty84Game(object):
                                               projectile_type=ORANGE_LASER))
             self.player.firing = False
 
-        for tesla in self.enemies_to_draw:
+        for tesla in self.spawned_enemies:
             if tesla.firing:
                 self.tesla_projectiles.add(
                     tesla.get_laser(data_dir=self.data_dir))
                 tesla.firing = False
 
-    def _update_sprites(self):
+    def _update_sprites(self) -> None:
+        """Update all drawn sprites."""
+
         self.player_group.update()
-        self.enemies_to_draw.update()
+        self.spawned_enemies.update()
         self.player_lasers.update()
         self.tesla_projectiles.update()
         self.explosions.update()
 
-    def _draw(self):
+    def _draw(self) -> None:
+        """Draw all sprites to the screen."""
+
         self.screen.blit(self.background, (0, 0))
         self.player_group.draw(self.screen)
         self.tesla_projectiles.draw(self.screen)
         self.player_lasers.draw(self.screen)
-        self.enemies_to_draw.draw(self.screen)
+        self.spawned_enemies.draw(self.screen)
         self.enemy_thrusters.draw(self.screen)
         self.explosions.draw(self.screen)
         self._draw_banner()
         pygame.display.flip()
 
-    def _player_has_lives(self):
+    def _player_has_lives(self) -> bool:
+        """
+        :return: True if the player has lives left, False otherwise
+        """
+
         return self.player_lives > 0
 
-    def _draw_initial(self):
+    def _draw_initial(self) -> None:
+        """Draw the initial screen."""
+
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.player.image,
                          (self.player.rect.x, self.player.rect.y))
-        self.enemies_to_draw.draw(self.screen)
+        self.spawned_enemies.draw(self.screen)
         pygame.display.flip()
 
-    def _draw_banner(self):
+    def _draw_banner(self) -> None:
+        """
+        Draw the banner at the top of the screen that displays the score,
+        lives, and round number.
+        """
+
         score_text = self.font.render(
             f'SCORE: {self.score}', True, self.font_color)
 
@@ -586,7 +624,8 @@ class Twenty84Game(object):
         self.screen.blit(round_text, ((self.screen_width -
                                        round_text.get_width())/2, self.padding))
 
-    def _draw_game_over(self):
+    def _draw_game_over(self) -> None:
+        """Draw the game over screen."""
 
         play_again = False
         while not play_again:
@@ -605,7 +644,7 @@ class Twenty84Game(object):
             self.player_group.draw(self.screen)
             self.tesla_projectiles.draw(self.screen)
             self.player_lasers.draw(self.screen)
-            self.enemies_to_draw.draw(self.screen)
+            self.spawned_enemies.draw(self.screen)
             self.enemy_thrusters.draw(self.screen)
             self.explosions.draw(self.screen)
             self._draw_banner()
@@ -630,7 +669,12 @@ class Twenty84Game(object):
 
         return play_again
 
-    def _draw_paused_screen(self):
+    def _draw_paused_screen(self) -> bool:
+        """
+        Draw the paused screen.
+
+        :return: True if the player wants to return to start, False otherwise
+        """
 
         paused = True
         while paused:
@@ -648,7 +692,7 @@ class Twenty84Game(object):
             self.player_group.draw(self.screen)
             self.tesla_projectiles.draw(self.screen)
             self.player_lasers.draw(self.screen)
-            self.enemies_to_draw.draw(self.screen)
+            self.spawned_enemies.draw(self.screen)
             self.enemy_thrusters.draw(self.screen)
             self.explosions.draw(self.screen)
             self._draw_banner()
@@ -672,7 +716,8 @@ class Twenty84Game(object):
 
             pygame.display.flip()
 
-    def _draw_start_screen(self):
+    def _draw_start_screen(self) -> None:
+        """Draw the start screen."""
 
         start = False
         while not start:
@@ -703,3 +748,17 @@ class Twenty84Game(object):
                                           quit_text.get_width())/2, (self.screen_height -
                                                                      quit_text.get_height())/2 + 50))
             pygame.display.flip()
+
+    def _explode(self, x: int, y: int):
+        """
+        Play the explosion animation at the given location
+
+        :param x: The x coordinate of the explosion
+        :param y: The y coordinate of the explosion
+        """
+        explosion_images = get_explosion_images(self.data_dir)
+
+        for img in explosion_images:
+            self.screen.blit(img, (x, y))
+            pygame.display.flip()
+            pygame.time.delay(50)

@@ -1,3 +1,6 @@
+# Author: Grant Nations
+# Date: 2/20/2023
+
 import os
 from src.twenty_84_game import Twenty84Game
 

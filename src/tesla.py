@@ -19,7 +19,7 @@ RIGHT = 1
 class Tesla(Sprite):
     """Tesla is the base class for all Tesla spaceships"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Sprite.__init__(self)
         self.firing = False
         self.is_alive = True
@@ -37,15 +37,15 @@ class Tesla(Sprite):
         self.points = None
         self.laser = None
 
-    def mark_for_deletion(self):
+    def mark_for_deletion(self) -> None:
         """Mark the Tesla for deletion"""
         self.is_alive = False
 
-    def shoot_laser(self):
+    def shoot_laser(self) -> None:
         """Shoot a laser"""
         self.firing = True
 
-    def set_direction(self, direction: int):
+    def set_direction(self, direction: int) -> None:
         """
         Set the direction of the Tesla
 
@@ -53,7 +53,7 @@ class Tesla(Sprite):
         """
         self.direction = direction
 
-    def update(self):
+    def update(self) -> None:
         """Update the Tesla"""
 
         if not self.is_alive:
@@ -69,24 +69,44 @@ class Tesla(Sprite):
         else:
             self.laser_counter += 1
 
-        self.animate()
+        self._animate()
+
+    def reverse_direction(self) -> None:
+        """Reverse the direction of the Tesla"""
+
+        self.reverse = not self.reverse
 
     def move(self) -> None:
+        """Move the Tesla"""
 
-        pass
+        pass  # This is implemented in subclasses
 
-    def animate(self):
-        pass
+    def _animate(self) -> None:
+        """Animate the Tesla"""
+
+        pass  # This is implemented in subclasses
+
+    def get_laser(self) -> Projectile:
+        """Get the laser for the Tesla"""
+
+        pass  # This is implemented in subclasses
 
 
 class ProtoS(Tesla):
-    """Model S is the fastest Tesla"""
+    """Diagonal moving Tesla spaceship"""
 
     def __init__(self,
                  x: int,
                  y: int,
                  data_dir: str,
-                 move_direction: int = RIGHT):
+                 move_direction: int = RIGHT) -> None:
+        """
+        :param x: The x coordinate of the ProtoS
+        :param y: The y coordinate of the ProtoS
+        :param data_dir: The directory containing the ProtoS image
+        :param move_direction: The direction the ProtoS is moving
+        """
+
         Tesla.__init__(self)
         self.speed = 1
         self.points = 50
@@ -105,15 +125,16 @@ class ProtoS(Tesla):
                                  data_dir=data_dir,
                                  inverted=True)
 
-    def animate(self):
+    def _animate(self) -> None:
+        """Animate the ProtoS"""
+
         self.thruster.rect.centerx = self.rect.centerx
         self.thruster.rect.bottom = self.rect.y + 5
         self.thruster.animate(direction=self.direction, offset_x=5)
 
-    def get_laser(self,
-                  data_dir: str):
+    def get_laser(self, data_dir: str) -> Projectile:
+        """Get the laser for the ProtoS"""
 
-        # TODO: change this to not load from disk every time
         return Projectile(centerx=self.rect.centerx,
                           y=self.rect.bottom,
                           direction=PROJECTILE_DOWN,
@@ -121,6 +142,8 @@ class ProtoS(Tesla):
                           projectile_type=GREEN_LASER)
 
     def move(self) -> None:
+        """Move the ProtoS"""
+
         x_speed = self.speed
 
         if self.reverse:
@@ -136,12 +159,9 @@ class ProtoS(Tesla):
         else:
             self.direction = RIGHT_THRUST
 
-    def reverse_direction(self):
-        self.reverse = not self.reverse
-
 
 class Proto3(Tesla):
-    """Model 3 is the second slowest Tesla"""
+    """Model 3 is the group-swarming Tesla spaceship"""
 
     laser_cool_down = 1000  # frames
 
@@ -149,6 +169,12 @@ class Proto3(Tesla):
                  x: int,
                  y: int,
                  data_dir: str):
+        """
+        :param x: The x coordinate of the Proto3
+        :param y: The y coordinate of the Proto3
+        :param data_dir: The directory containing the Proto3 image
+        """
+
         Tesla.__init__(self)
         self.image = load_image(image_dir=data_dir,
                                 img_name=PROTO_3_IMAGE,
@@ -166,23 +192,28 @@ class Proto3(Tesla):
                                  inverted=True)
 
     @classmethod
-    def reset_fire_rate(cls):
+    def reset_fire_rate(cls) -> None:
+        """Reset the fire rate of the Proto3"""
+
         cls.laser_cool_down = 1000
 
     @classmethod
-    def boost_fire_rate(cls):
+    def boost_fire_rate(cls) -> None:
+        """Decrease the fire cooldown of the Proto3 to a minimum of 600 frames"""
+
         if cls.laser_cool_down > 600:
             cls.laser_cool_down -= 100
 
-    def animate(self):
+    def _animate(self) -> None:
+        """Animate the Proto3"""
+
         self.thruster.rect.centerx = self.rect.centerx
         self.thruster.rect.bottom = self.rect.y + 9
         self.thruster.animate(direction=self.direction, offset_x=5)
 
-    def get_laser(self,
-                  data_dir: str):
+    def get_laser(self, data_dir: str) -> Projectile:
+        """Get the laser for the Proto3"""
 
-        # TODO: change this to not load from disk every time
         return Projectile(centerx=self.rect.centerx,
                           y=self.rect.bottom,
                           direction=PROJECTILE_DOWN,
@@ -190,6 +221,7 @@ class Proto3(Tesla):
                           projectile_type=RED_LASER)
 
     def move(self) -> None:
+        """Move the Proto3"""
 
         x_speed = self.speed
         if self.reverse:
@@ -202,15 +234,14 @@ class Proto3(Tesla):
         else:
             self.direction = RIGHT_THRUST
 
-    def reverse_direction(self):
-        self.reverse = not self.reverse
+    def move_down(self) -> None:
+        """Move the Proto3 down"""
 
-    def move_down(self):
         self.direction = VERTICAL_THRUST
         self.rect.y += self.speed
 
-    def update(self):
-        """Update the Tesla"""
+    def update(self) -> None:
+        """Update the Proto3"""
 
         if not self.is_alive:
             self.kill()
@@ -225,16 +256,24 @@ class Proto3(Tesla):
         else:
             self.laser_counter += 1
 
-        self.animate()
+        self._animate()
 
 
 class ProtoX(Tesla):
+    """Model X is the carpet-bombing Tesla spaceship"""
 
     def __init__(self,
                  x: int,
                  y: int,
                  data_dir: str,
                  move_direction: int = VERTICAL_THRUST):
+        """
+        :param x: The x coordinate of the ProtoX
+        :param y: The y coordinate of the ProtoX
+        :param data_dir: The directory containing the ProtoX image
+        :param move_direction: The direction the ProtoX is moving
+        """
+
         Tesla.__init__(self)
         self.speed = 1
         self.points = 100
@@ -254,12 +293,15 @@ class ProtoX(Tesla):
                                  data_dir=data_dir,
                                  inverted=True)
 
-    def animate(self):
+    def _animate(self) -> None:
+        """Animate the ProtoX"""
+
         self.thruster.rect.centerx = self.rect.centerx
         self.thruster.rect.bottom = self.rect.y + 5
         self.thruster.animate(direction=self.direction, offset_x=5)
 
-    def get_laser(self, data_dir: str):
+    def get_laser(self, data_dir: str) -> Projectile:
+        """Get the laser for the ProtoX"""
 
         return Projectile(centerx=self.rect.centerx,
                           y=self.rect.bottom,
@@ -268,6 +310,7 @@ class ProtoX(Tesla):
                           projectile_type=MISSILE)
 
     def move(self) -> None:
+        """Move the ProtoX"""
 
         # perform horizontal movement
         x_speed = self.speed
@@ -284,10 +327,8 @@ class ProtoX(Tesla):
         else:
             self.direction = RIGHT_THRUST
 
-    def reverse_direction(self):
-        self.reverse = not self.reverse
-
-    def update(self):
+    def update(self) -> None:
+        """Update the ProtoX"""
 
         if not self.is_alive:
             self.kill()
@@ -302,17 +343,24 @@ class ProtoX(Tesla):
         else:
             self.laser_counter += 1
 
-        self.animate()
+        self._animate()
 
 
 class ProtoY(Tesla):
-    """Model Y is the second fastest Tesla"""
+    """Model Y is the sporadic Tesla spaceship"""
 
     def __init__(self,
                  x: int,
                  y: int,
                  data_dir: str,
-                 move_direction: int = VERTICAL_THRUST):
+                 move_direction: int = VERTICAL_THRUST) -> None:
+        """
+        :param x: The x coordinate of the ProtoY
+        :param y: The y coordinate of the ProtoY
+        :param data_dir: The directory containing the ProtoY image
+        :param move_direction: The direction the ProtoY is moving
+        """
+
         Tesla.__init__(self)
         self.speed = 2
         self.points = 80
@@ -336,7 +384,9 @@ class ProtoY(Tesla):
         self.move_y_timer = random.randint(1, self.move_y_cooldown)
         self.y_move_frames = 10
 
-    def animate(self):
+    def _animate(self) -> None:
+        """Animate the ProtoY"""
+
         self.thruster.rect.centerx = self.rect.centerx
         self.thruster.rect.bottom = self.rect.y + 5
         self.thruster.animate(direction=self.direction, offset_x=5)
@@ -344,7 +394,6 @@ class ProtoY(Tesla):
     def get_laser(self,
                   data_dir: str):
 
-        # TODO: change this to not load from disk every time
         return Projectile(centerx=self.rect.centerx,
                           y=self.rect.bottom,
                           direction=PROJECTILE_DOWN,
@@ -352,6 +401,7 @@ class ProtoY(Tesla):
                           projectile_type=BLUE_LASER)
 
     def move(self) -> None:
+        """Move the ProtoY"""
 
         # perform horizontal movement
         x_speed = self.speed
@@ -382,6 +432,3 @@ class ProtoY(Tesla):
             return
         else:
             self.move_y_timer -= 1
-
-    def reverse_direction(self):
-        self.reverse = not self.reverse

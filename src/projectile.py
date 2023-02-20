@@ -1,5 +1,5 @@
 from pygame.sprite import Sprite
-from utils.projectile_utils import get_speed, load_images, MISSILE
+from utils.projectile_utils import get_speed, get_projectile_images, MISSILE
 
 
 PROJECTILE_UP = 0
@@ -13,10 +13,18 @@ class Projectile(Sprite):
                  y: int,
                  direction: str,
                  data_dir: str,
-                 projectile_type: str):
+                 projectile_type: str) -> None:
+        """
+        :param centerx: The center x coordinate of the projectile
+        :param y: The y coordinate of the projectile
+        :param direction: The direction of the projectile
+        :param data_dir: The directory containing the projectile images
+        :param projectile_type: The type of projectile
+        """
+
         Sprite.__init__(self)
-        self.images = load_images(projectile_type=projectile_type,
-                                  image_dir=data_dir)
+        self.images = get_projectile_images(projectile_type=projectile_type,
+                                            image_dir=data_dir)
         self.projectile_type = projectile_type
         self.image = self.images[0]
         self.rect = self.image.get_rect()
@@ -27,31 +35,31 @@ class Projectile(Sprite):
         self.image_index = 0
         self.speed = get_speed(projectile_type)
 
-    def mark_for_deletion(self):
+    def mark_for_deletion(self) -> None:
         """Mark the laser for deletion"""
 
         self.is_alive = False
 
-    def update(self):
+    def update(self) -> None:
         """Update the laser"""
 
         if not self.is_alive:
             self.kill()
 
-        self.move()
+        self._move()
 
         if self.projectile_type == MISSILE:
-            self.animate_missile()
+            self._animate_missile()
         else:
-            self.animate()
+            self._animate()
 
-    def animate_missile(self):
-        """Animate the missile"""
+    def _animate_missile(self) -> None:
+        """Animate a missile"""
 
         self.image_index = (self.image_index + 1) % len(self.images)
         self.image = self.images[self.image_index]
 
-    def animate(self):
+    def _animate(self) -> None:
         """Animate the projectile"""
 
         if self.image_index == len(self.images) - 1:
@@ -60,7 +68,7 @@ class Projectile(Sprite):
         self.image_index += 1
         self.image = self.images[self.image_index]
 
-    def move(self):
+    def _move(self) -> None:
         """Move the laser in the given direction"""
 
         if self.direction == PROJECTILE_UP:

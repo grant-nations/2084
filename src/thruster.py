@@ -3,12 +3,20 @@ from utils.thruster_utils import load_thrust_images, LEFT_THRUST, RIGHT_THRUST, 
 
 
 class Thruster(Sprite):
+    """A class to represent a thruster on a spaceship"""
 
     def __init__(self,
                  centerx: int,
                  y: int,
                  data_dir: str,
-                 inverted: bool = False):
+                 inverted: bool = False) -> None:
+        """
+        :param centerx: The x coordinate of the center of the thruster
+        :param y: The y coordinate of the thruster
+        :param data_dir: The directory where the thruster images are located
+        :param inverted: True if the thruster is inverted (for enemy ships)
+        """
+
         Sprite.__init__(self)
         self.is_alive = True
         self.left_thrust = load_thrust_images(thrust_type=LEFT_THRUST,
@@ -32,7 +40,12 @@ class Thruster(Sprite):
         else:
             self.rect.y = y
 
-    def animate(self, direction: str, offset_x: int = 0):
+    def animate(self, direction: str, offset_x: int = 0) -> None:
+        """Animate the thruster based on the direction of the ship
+
+        :param direction: The direction of the ship
+        :param offset_x: The offset to apply to the x coordinate of the thruster
+        """
 
         if direction != self.direction:
             self.direction = direction

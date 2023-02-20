@@ -15,7 +15,13 @@ class Player(Sprite):
     def __init__(self,
                  x: int,
                  y: int,
-                 data_dir: str):
+                 data_dir: str) -> None:
+        """
+        :param x: The x coordinate of the player
+        :param y: The y coordinate of the player
+        :param data_dir: The directory containing the player image
+        """
+
         Sprite.__init__(self)
         self.image = load_image(image_dir=data_dir,
                                 img_name=PLAYER_IMG_FILE,
@@ -23,7 +29,6 @@ class Player(Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.sound = None  # TODO: Load the sound
         self.firing = False
         self.is_alive = True
         self.thruster = Thruster(centerx=self.rect.centerx,
@@ -31,7 +36,8 @@ class Player(Sprite):
                                  data_dir=data_dir)
         self.direction = PLAYER_VERTICAL
 
-    def update(self):
+    def update(self) -> None:
+        """Update the player"""
 
         if not self.is_alive:
             self.thruster.kill()
@@ -41,8 +47,7 @@ class Player(Sprite):
         self.thruster.rect.y = self.rect.bottom
         self.thruster.animate(direction=self.direction, offset_x=3)
 
-    def set_direction(self,
-                      direction: int):
+    def set_direction(self, direction: int) -> None:
         """
         Set the direction of the player
 
@@ -52,7 +57,7 @@ class Player(Sprite):
 
     def move(self,
              direction: str,
-             screen_width: int):
+             screen_width: int) -> None:
         """
         Move the player in the given direction
 
@@ -69,12 +74,12 @@ class Player(Sprite):
         elif self.rect.x > screen_width - PLAYER_WIDTH:
             self.rect.x = screen_width - PLAYER_WIDTH
 
-    def shoot_laser(self):
+    def shoot_laser(self) -> None:
         """Shoot a laser in the UP direction"""
 
         self.firing = True
 
     def die(self):
-        """Kill the player"""
+        """Pretty self explanatory"""
 
         self.is_alive = False

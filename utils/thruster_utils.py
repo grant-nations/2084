@@ -11,7 +11,15 @@ VERTICAL_THRUST = 2
 def load_thrust_images(thrust_type: int,
                        image_dir: str,
                        inverted: bool = False) -> List[Surface]:
-    """Load the images for the laser"""
+    """
+    Load the images for the laser
+
+    :param thrust_type: The type of thrust to load
+    :param image_dir: The directory where the images are located
+    :param inverted: True if the thruster is inverted (for enemy ships)
+
+    :return: A list of images
+    """
 
     prefix = ''
     if thrust_type == LEFT_THRUST or thrust_type == RIGHT_THRUST:

@@ -3,76 +3,73 @@ from typing import List
 from pygame import Surface
 
 
-LASER_HEIGHT = LASER_WIDTH = 32
-
 RED_LASER = 'red_laser'
 RED_LASER_SPEED = 3
-RED_LASER_IMAGES = ['red_laser_1.png',
-                    'red_laser_2.png',
-                    'red_laser_3.png']
+RED_LASER_FILE_PREFIX = 'red_laser_'
 
 BLUE_LASER = 'blue_laser'
 BLUE_LASER_SPEED = 7
-BLUE_LASER_IMAGES = ['blue_laser_1.png',
-                     'blue_laser_2.png',
-                     'blue_laser_3.png']
+BLUE_LASER_FILE_PREFIX = 'blue_laser_'
 
 GREEN_LASER = 'green_laser'
 GREEN_LASER_SPEED = 5
-GREEN_LASER_IMAGES = ['green_laser_1.png',
-                      'green_laser_2.png',
-                      'green_laser_3.png']
+GREEN_LASER_FILE_PREFIX = 'green_laser_'
 
 ORANGE_LASER = 'orange_laser'
 ORANGE_LASER_SPEED = 10
-ORANGE_LASER_IMAGES = ['orange_laser_1.png',
-                       'orange_laser_2.png',
-                       'orange_laser_3.png']
+ORANGE_LASER_FILE_PREFIX = 'orange_laser_'
 
 MISSILE = 'missile'
 MISSILE_SPEED = 5
-MISSILE_IMAGES = ['missile-1.png',
-                  'missile-2.png']
+MISSILE_FILE_PREFIX = 'missile-'
 
 
-def load_images(projectile_type: str,
-                image_dir: str) -> List[Surface]:
-    """Load the images for the laser"""
+def get_projectile_images(projectile_type: str,
+                          image_dir: str) -> List[Surface]:
+    """
+    Load the images for the laser
+
+    :param projectile_type: The type of laser to load
+    :param image_dir: The directory where the images are located
+
+    :return: A list of images
+    """
+
     images = []
 
+    file_prefix = ''
+    num_images = 3  # number of images for all lasers (not missiles)
+
     if projectile_type == RED_LASER:
-        for img_name in RED_LASER_IMAGES:
-            images.append(load_image(image_dir=image_dir,
-                                     img_name=img_name,
-                                     colorkey=-1))
+        file_prefix = RED_LASER_FILE_PREFIX
     elif projectile_type == BLUE_LASER:
-        for img_name in BLUE_LASER_IMAGES:
-            images.append(load_image(image_dir=image_dir,
-                                     img_name=img_name,
-                                     colorkey=-1))
-
+        file_prefix = BLUE_LASER_FILE_PREFIX
     elif projectile_type == GREEN_LASER:
-        for img_name in GREEN_LASER_IMAGES:
-            images.append(load_image(image_dir=image_dir,
-                                     img_name=img_name,
-                                     colorkey=-1))
-
+        file_prefix = GREEN_LASER_FILE_PREFIX
     elif projectile_type == ORANGE_LASER:
-        for img_name in ORANGE_LASER_IMAGES:
-            images.append(load_image(image_dir=image_dir,
-                                     img_name=img_name,
-                                     colorkey=-1))
-
+        file_prefix = ORANGE_LASER_FILE_PREFIX
     elif projectile_type == MISSILE:
-        for img_name in MISSILE_IMAGES:
-            images.append(load_image(image_dir=image_dir,
-                                     img_name=img_name,
-                                     colorkey=-1))
+        file_prefix = MISSILE_FILE_PREFIX
+        num_images = 2
+
+    for i in range(1, num_images + 1):
+        index = f'{i}'
+
+        img_name = f'{file_prefix}{index}.png'
+        images.append(load_image(image_dir=image_dir,
+                                 img_name=img_name,
+                                 colorkey=-1))
     return images
 
 
-def get_speed(projectile_type: str):
-    """Get the speed of the laser from the laser type"""
+def get_speed(projectile_type: str) -> int:
+    """
+    Get the speed of the laser from the laser type
+
+    :param projectile_type: The type of laser to load
+
+    :return: The speed of the laser
+    """
 
     if projectile_type == RED_LASER:
         return RED_LASER_SPEED
