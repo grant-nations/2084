@@ -51,7 +51,8 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
    ```
    python -m venv (2084 dir)/.venv
    ```
-
+   
+   Activate the environment:
    ```
    source (2084 dir)/.venv/bin/activate
    ``` 
@@ -60,6 +61,8 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
    ```
    python -m venv (2084 dir)\.venv
    ```
+   
+   Activate the environment:
    ```
    (2084 dir)\Scripts\Activate.ps1
    ``` 
