@@ -64,7 +64,7 @@ The goal is to accumulate as many points as possible. Maybe if you get enough, i
    
    Activate the environment:
    ```
-   (2084 dir)\Scripts\Activate.ps1
+   (2084 dir)\.venv\Scripts\Activate.ps1
    ``` 
 
    ---
