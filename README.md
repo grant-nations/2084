@@ -9,7 +9,7 @@ Immortality is available to a select few, one of which is Elon Musk (of course).
 
 
 
-The goal is to accumulate as many points as possible. Maybe if you get enough, immortal Elon will call of the seige. Different Telsa spaceships have different point values, weapons, and movements.
+The goal is to accumulate as many points as possible. Maybe if you get enough, immortal Elon will call off the seige. Different Telsa spaceships have different point values, weapons, and movements.
 
 | Ship    | Sprite                                                                         | Points | Weapon  | Movement   | Spawn Wave |
 | ------- | ------------------------------------------------------------------------------ | ------ | ------- | ---------- | ---------- |
